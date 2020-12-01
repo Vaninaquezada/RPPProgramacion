@@ -6,7 +6,7 @@ class  Materia{
     private $nombre;
     private $cuatrimestre;
     private $id;
-    private $ruta = "./archivos/materias.json";
+    private static $ruta = "./archivos/materias.json";
 
  
 
@@ -36,7 +36,7 @@ public  function AltaMateria()
       $array=array("id"=> $this->id,"Cuatrimestre"=> $this->cuatrimestre ,"Nombre"=>$this->nombre);
       
       
-        archivos::GuardarJson($this->ruta, $array);
+        archivos::GuardarJson(Materia::$ruta, $array);
 
        return array("code"=>200,"mensaje"=>"Materia dada de alta de forma exitosa");
 
@@ -46,29 +46,44 @@ public  function AltaMateria()
 }
 
 
-public static  function TraerMateria($patente){
-    $ruta = "./archivos/autos.json";
+public static  function TraerMateria($id){
+ 
 
-    $array =  Archivos::traerJson($ruta);
+    $array =  Archivos::traerJson(Materia::$ruta);
      
-    $repetido = false;
 
     if (isset($array)) {
        
         foreach ($array as $item) {
            
-               if($item->Usuario == $patente )
+               if($item->id == $id )
                 {
                     
-                    return $item;
+                    return true;
                 }  
                
         }
     }
-       return  $repetido;
+       return  false;
 
 }
 
+public static  function TraerMaterias(){
+
+
+    $array =  Archivos::traerJson(Materia::$ruta);
+     
+    $repetido = false;
+
+    if (isset($array)) {     
+                    
+                    return $array;
+               
+        
+    }
+       return  $repetido;
+
+}
 
 
 }

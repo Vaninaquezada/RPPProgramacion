@@ -4,6 +4,8 @@ require_once ("clases/usuario.php");
 require_once ("clases/materia.php");
 require_once ("clases/responsejson.php");
 require_once ("clases/profesor.php");
+require_once ("clases/asignacion.php");
+
 
 $method = $_SERVER['REQUEST_METHOD'];
 $path = $_SERVER['PATH_INFO'] ?? 0;
@@ -55,22 +57,28 @@ switch ($path) {
              $token = $_SERVER['HTTP_TOKEN'];
              
   
-     if(Usuario::ValidarToken($token)){
+            if(Usuario::ValidarToken($token)){
 
-       
-        $materia= new Materia( $nombre,$cuatrimestre);
-        $array= $materia->AltaMateria();
+        
+            $materia= new Materia( $nombre,$cuatrimestre);
+            $array= $materia->AltaMateria();
 
-        echo ResponseJson::GenerarJson($array);
-       
+            echo ResponseJson::GenerarJson($array);
+        
 
-       }else{
-        $array=  array("code"=>400,"mensaje"=>"Token invalido");
-        echo ResponseJson::GenerarJson($array);
-  
-       }
+            }
+            else{
+                $array=  array("code"=>400,"mensaje"=>"Token invalido");
+                echo ResponseJson::GenerarJson($array);
+        
+            }
       
           
+
+        }else if($method == "GET")
+        {
+            $array= Materia::TraerMaterias();
+            echo ResponseJson::GenerarJson($array);
 
         } else {
             $array=   array("code"=>400,"mensaje"=>"Metodo no permitido");
@@ -112,6 +120,11 @@ switch ($path) {
       
           
 
+        }else if($method == "GET")
+        {
+            $array= Profesor::TraerProfesores();
+            echo ResponseJson::GenerarJson($array);
+
         } else {
             $array=   array("code"=>400,"mensaje"=>"Metodo no permitido");
             echo ResponseJson::GenerarJson($array);
@@ -119,6 +132,66 @@ switch ($path) {
 
 
     break;
+    case '/asignacion':
+        if ($method == 'POST') {
+    
+            $idMateria= $_POST["idMateria"];
+            $legajoProfesor= $_POST["legajoProfesor"];
+            $turno= $_POST["turno"];
+             $token = $_SERVER['HTTP_TOKEN'];
+             
+  
+     if(Usuario::ValidarToken($token)){
+         
+        $asignacion= new Asinacion($legajoProfesor,$turno,$idMateria);
+        
+        if(Profesor::TraerProfesor($legajoProfesor)){
+
+            if(Materia::TraerMateria($idMateria)){
+                if($asignacion->ValidarAsignacion()){
+
+                    $array= $asignacion->AltaAsignacion();
+        
+                    echo ResponseJson::GenerarJson($array);
+                }else{
+                    $array=  array("code"=>400,"mensaje"=>"Asignacion existente, un profesor no puese tener asignado mas de una materia en el mismo turno");
+                    echo ResponseJson::GenerarJson($array);
+                }
+        
+            
+            }else{
+                $array=  array("code"=>400,"mensaje"=>"Id Materia inexistente");
+                echo ResponseJson::GenerarJson($array);
+            }
+        }else{
+            $array=  array("code"=>400,"mensaje"=>"Legajo Profesor inexistente");
+            echo ResponseJson::GenerarJson($array);
+        }
+
+       
+       
+
+       }else{
+        $array=  array("code"=>400,"mensaje"=>"Token invalido");
+        echo ResponseJson::GenerarJson($array);
+  
+       }
+      
+          
+
+        }else if($method == "GET")
+        {
+            $array= Asinacion::TraerAsignaciones();
+            echo ResponseJson::GenerarJson($array);
+
+        } else {
+            $array=   array("code"=>400,"mensaje"=>"Metodo no permitido");
+            echo ResponseJson::GenerarJson($array);
+        }
+
+
+    break;
+   
     default:
     $array=   array("code"=>400,"mensaje"=>"Path erroneo");
     echo ResponseJson::GenerarJson($array);

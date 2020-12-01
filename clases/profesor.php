@@ -46,25 +46,39 @@ public  function AltaProfesor()
 }
 
 
-public static  function TraerProfesor($patente){
-    $ruta = "./archivos/autos.json";
+public static  function TraerProfesor($legajo){
 
-    $array =  Archivos::traerJson($ruta);
+
+    $array =  Archivos::traerJson(Profesor::$ruta);
      
-    $repetido = false;
-
     if (isset($array)) {
        
         foreach ($array as $item) {
-           
-               if($item->Usuario == $patente )
+
+               if($item->Legajo == $legajo )
                 {
-                    
-                    return $item;
+
+                    return true;
                 }  
                
         }
     }
+       return  false;
+
+}
+
+public static  function TraerProfesores(){
+
+
+    $array =  Archivos::traerJson(Profesor::$ruta);
+     
+    $repetido = false;
+
+    if (isset($array)) {              
+        return $array;
+               
+        }
+    
        return  $repetido;
 
 }
